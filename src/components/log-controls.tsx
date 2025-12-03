@@ -34,7 +34,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      railwayApiKey: '',
+      railwayApiKey: '6e1d5f01-f66a-4c69-aa03-b944bc91bf43',
       serviceId: 'a3c61f67-b334-4dc1-a94f-cf2844933895',
       password: process.env.NEXT_PUBLIC_APP_PASSWORD || 'password',
     },
@@ -82,7 +82,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
                       <Input type="password" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" {...field} />
                     </FormControl>
                      <FormHelpText>
-                      Necesitas un token de cuenta personal, puedes generarlo en la configuración de tu cuenta de Railway.
+                      Necesitas un token de cuenta personal (no de proyecto), puedes generarlo en la configuración de tu cuenta de Railway.
                     </FormHelpText>
                     <FormMessage />
                   </FormItem>
