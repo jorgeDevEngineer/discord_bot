@@ -50,6 +50,10 @@ export async function fetchLogs(railwayApiKey: string, serviceId: string, logTyp
     },
   });
 
+  if (!railwayApiKey || !serviceId) {
+    return { logs: [], error: 'Railway API Token or Service ID are not configured.', title: '' };
+  }
+  
   try {
     const deployData = await graphQLClient.request<{ deployments: { edges: { node: { id: string, status: string } }[] } }>(GET_LATEST_DEPLOYMENT, {
       serviceId: serviceId,
@@ -76,6 +80,9 @@ export async function fetchLogs(railwayApiKey: string, serviceId: string, logTyp
     return { logs, title };
   } catch (error: any) {
     console.error(error);
+    if (error.response?.errors?.length > 0 && error.response.errors[0].message.includes('Unauthorized')) {
+      return { logs: [], error: `GraphQL Error: Unauthorized. Please check your Railway API Token.`, title: '' };
+    }
     if (error.response?.errors?.length > 0) {
       return { logs: [], error: `GraphQL Error: ${error.response.errors[0].message}`, title: '' };
     }

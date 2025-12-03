@@ -28,7 +28,7 @@ if (
   !RAILWAY_API_TOKEN ||
   !RAILWAY_SERVICE_ID
 ) {
-  console.error('Missing required environment variables. Please check your .env.local file.');
+  console.error('Missing required environment variables. Please check your .env file.');
   process.exit(1);
 }
 
@@ -37,6 +37,7 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
   ],
   partials: [Partials.Channel],
 });
@@ -57,15 +58,8 @@ client.on('messageCreate', async (message) => {
   // Security Check: Admin role
   if (DISCORD_ADMIN_ROLE_ID) {
     if (!message.member?.roles.cache.has(DISCORD_ADMIN_ROLE_ID)) {
-      const { hasPermission } = await checkAdminRole({
-        // @ts-ignore - discord.js types are complex, this is safe
-        message,
-        adminRoleId: DISCORD_ADMIN_ROLE_ID,
-      });
-      if (!hasPermission) {
-        message.reply({ content: 'Lo siento, no tienes permiso para usar este comando.' });
-        return;
-      }
+      message.reply({ content: 'Lo siento, no tienes permiso para usar este comando.' });
+      return;
     }
   }
 
