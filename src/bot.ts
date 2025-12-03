@@ -42,7 +42,7 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-client.once('ready', () => {
+client.once('clientReady', () => {
   console.log(`Logged in as ${client.user?.tag}!`);
   console.log('Bot is ready and listening for commands.');
 });
