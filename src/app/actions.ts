@@ -6,14 +6,6 @@ import type { LogEntry } from '@/lib/definitions';
 import { summarizeLogs } from '@/ai/flows/summarize-logs';
 import { interpretLogError } from '@/ai/flows/interpret-log-error';
 
-const FormSchema = z.object({
-  railwayApiKey: z.string().min(1, 'Railway API Token is required.'),
-  serviceId: z.string().min(1, 'Service ID is required.'),
-  password: z.string().min(1, 'Password is required.'),
-});
-
-type FormValues = z.infer<typeof FormSchema>;
-
 const RAILWAY_API_ENDPOINT = 'https://backboard.railway.app/graphql/v2';
 
 const GET_LATEST_DEPLOYMENT = gql`
@@ -49,25 +41,18 @@ const GET_BUILD_LOGS = gql`
   }
 `;
 
-export async function fetchLogsAction(values: FormValues, logType: 'deploy' | 'app'): Promise<{ logs: LogEntry[]; error?: string, title: string }> {
-  const validation = FormSchema.safeParse(values);
-  if (!validation.success) {
-    return { logs: [], error: 'Invalid input.', title: '' };
-  }
-  
-  if (values.password !== process.env.APP_PASSWORD) {
-    return { logs: [], error: 'Invalid password.', title: '' };
-  }
+const stripAnsiCodes = (str: string) => str.replace(/[\u001b\u009b][[()#;?]*.{0,2}(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
 
+export async function fetchLogs(railwayApiKey: string, serviceId: string, logType: 'deploy' | 'app', limit: number = 50): Promise<{ logs: LogEntry[]; error?: string, title: string }> {
   const graphQLClient = new GraphQLClient(RAILWAY_API_ENDPOINT, {
     headers: {
-      Authorization: `Bearer ${values.railwayApiKey}`,
+      Authorization: `Bearer ${railwayApiKey}`,
     },
   });
 
   try {
     const deployData = await graphQLClient.request<{ deployments: { edges: { node: { id: string, status: string } }[] } }>(GET_LATEST_DEPLOYMENT, {
-      serviceId: values.serviceId,
+      serviceId: serviceId,
     });
 
     const deployment = deployData.deployments.edges[0]?.node;
@@ -78,13 +63,17 @@ export async function fetchLogsAction(values: FormValues, logType: 'deploy' | 'a
     const query = logType === 'deploy' ? GET_BUILD_LOGS : GET_DEPLOYMENT_LOGS;
     const logData = await graphQLClient.request<{ [key: string]: LogEntry[] }>(query, {
       deploymentId: deployment.id,
-      limit: 100, // Fetch last 100 logs
+      limit: limit,
     });
     
-    const logs = logType === 'deploy' ? logData.buildLogs : logData.deploymentLogs;
-    const title = `${logType === 'deploy' ? 'Deployment' : 'Application'} Logs for ${deployment.id}`;
+    const logs = (logType === 'deploy' ? logData.buildLogs : logData.deploymentLogs).map(log => ({
+      ...log,
+      message: stripAnsiCodes(log.message),
+    }));
 
-    return { logs: logs.slice(-100), title };
+    const title = `${logType === 'deploy' ? 'Deployment' : 'Application'} Logs for ${deployment.id.slice(0,8)}`;
+
+    return { logs, title };
   } catch (error: any) {
     console.error(error);
     if (error.response?.errors?.length > 0) {
@@ -98,7 +87,7 @@ export async function summarizeLogsAction(logs: LogEntry[]) {
   if (!logs || logs.length === 0) {
     return { error: 'No logs to summarize.' };
   }
-  const logText = logs.map(l => `[${new Date(l.timestamp).toLocaleTimeString()}] ${l.message}`).join('\n');
+  const logText = logs.map(l => `[${new Date(l.timestamp).toLocaleTimeString()}] [${l.severity}] ${l.message}`).join('\n');
   
   try {
     const result = await summarizeLogs({ logs: logText });
