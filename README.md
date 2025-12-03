@@ -7,3 +7,4 @@ To get started, take a look at src/app/page.tsx.
 # bot_discord
 # bot_discord
 # discord_bot
+# discord_bot
