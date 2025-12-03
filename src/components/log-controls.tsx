@@ -8,7 +8,7 @@ import type { LogEntry } from '@/lib/definitions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription as FormHelpText } from '@/components/ui/form';
 import { Server, Terminal, KeyRound, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Dispatch, SetStateAction } from 'react';
@@ -35,8 +35,8 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
     resolver: zodResolver(FormSchema),
     defaultValues: {
       railwayApiKey: process.env.NEXT_PUBLIC_RAILWAY_API_KEY || '',
-      serviceId: process.env.NEXT_PUBLIC_RAILWAY_SERVICE_ID || '',
-      password: '',
+      serviceId: '',
+      password: process.env.NEXT_PUBLIC_APP_PASSWORD || '',
     },
   });
 
@@ -94,6 +94,9 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
                     <FormControl>
                       <Input placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" {...field} />
                     </FormControl>
+                    <FormHelpText>
+                      Puedes encontrarlo en la URL de tu servicio en Railway.
+                    </FormHelpText>
                     <FormMessage />
                   </FormItem>
                 )}
