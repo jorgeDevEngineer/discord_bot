@@ -14,9 +14,9 @@ import { useToast } from '@/hooks/use-toast';
 import type { Dispatch, SetStateAction } from 'react';
 
 const FormSchema = z.object({
-  railwayApiKey: z.string().min(1, 'Railway API Token is required.'),
-  serviceId: z.string().min(1, 'Service ID is required.'),
-  password: z.string().min(1, 'Password is required.'),
+  railwayApiKey: z.string().min(1, 'El token de API de Railway es requerido.'),
+  serviceId: z.string().min(1, 'El ID de servicio es requerido.'),
+  password: z.string().min(1, 'La contraseña es requerida.'),
 });
 
 type FormValues = z.infer<typeof FormSchema>;
@@ -34,8 +34,8 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      railwayApiKey: '',
-      serviceId: '',
+      railwayApiKey: process.env.NEXT_PUBLIC_RAILWAY_API_KEY || '',
+      serviceId: process.env.NEXT_PUBLIC_RAILWAY_SERVICE_ID || '',
       password: '',
     },
   });
@@ -65,8 +65,8 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Configuration</CardTitle>
-        <CardDescription>Enter your Railway API token, service ID, and password to fetch logs.</CardDescription>
+        <CardTitle>Configuración</CardTitle>
+        <CardDescription>Ingresa tu token de API de Railway, el ID del servicio y la contraseña para obtener los logs.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -77,7 +77,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
                 name="railwayApiKey"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Railway API Token</FormLabel>
+                    <FormLabel>Token de API de Railway</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="proj-..." {...field} />
                     </FormControl>
@@ -90,7 +90,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
                 name="serviceId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Service ID</FormLabel>
+                    <FormLabel>ID de Servicio</FormLabel>
                     <FormControl>
                       <Input placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" {...field} />
                     </FormControl>
@@ -104,9 +104,9 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Contraseña</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="App password" {...field} />
+                    <Input type="password" placeholder="Contraseña de la app" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,11 +115,11 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button onClick={() => handleFetchLogs('deploy')} disabled={isLoading} className="w-full sm:w-auto">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Server />}
-                Fetch Deployment Logs
+                Obtener Logs de Despliegue
               </Button>
               <Button onClick={() => handleFetchLogs('app')} disabled={isLoading} className="w-full sm:w-auto">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Terminal />}
-                Fetch Application Logs
+                Obtener Logs de Aplicación
               </Button>
             </div>
           </form>

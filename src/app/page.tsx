@@ -20,7 +20,7 @@ export default function Home() {
             Railway Logger
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            View your Railway deployment and app logs directly from here. Enter your credentials and service ID to get started.
+            Visualiza los logs de tus despliegues y de tu aplicación en Railway. Ingresa tus credenciales y el ID de tu servicio para comenzar.
           </p>
         </div>
         <LogManager />
