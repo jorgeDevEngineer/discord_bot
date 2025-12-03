@@ -34,9 +34,9 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      railwayApiKey: process.env.NEXT_PUBLIC_RAILWAY_API_KEY || '',
-      serviceId: '',
-      password: process.env.NEXT_PUBLIC_APP_PASSWORD || '',
+      railwayApiKey: '45687e49-33af-405d-99ec-a5d330d454a4',
+      serviceId: 'a3c61f67-b334-4dc1-a94f-cf2844933895',
+      password: process.env.NEXT_PUBLIC_APP_PASSWORD || 'password',
     },
   });
 
@@ -95,7 +95,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
                       <Input placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" {...field} />
                     </FormControl>
                     <FormHelpText>
-                      Puedes encontrarlo en la URL de tu servicio en Railway.
+                      Puedes encontrarlo en la URL de tu servicio en Railway, después de /service/.
                     </FormHelpText>
                     <FormMessage />
                   </FormItem>
