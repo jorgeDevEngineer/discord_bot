@@ -16,6 +16,8 @@ type LogViewerProps = {
   onInterpret: (logMessage: string) => void;
 };
 
+const stripAnsiCodes = (str: string) => str.replace(/[\u001b\u009b][[()#;?]*.{0,2}(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+
 const LogLine = ({ log, onInterpret }: { log: LogEntry, onInterpret: (logMessage: string) => void; }) => {
   const severityColor = {
     'INFO': 'text-blue-400',
@@ -24,18 +26,20 @@ const LogLine = ({ log, onInterpret }: { log: LogEntry, onInterpret: (logMessage
     'DEBUG': 'text-gray-400',
   }[log.severity] || 'text-gray-400';
 
+  const cleanMessage = stripAnsiCodes(log.message);
+
   return (
     <div className="group flex items-start gap-4 text-sm font-mono hover:bg-muted/50 px-4 py-2 transition-colors">
       <time className="text-muted-foreground whitespace-nowrap tabular-nums">
         {new Date(log.timestamp).toLocaleTimeString()}
       </time>
       <span className={`font-bold w-14 ${severityColor}`}>{log.severity}</span>
-      <p className="flex-1 break-words whitespace-pre-wrap">{log.message}</p>
+      <p className="flex-1 break-words whitespace-pre-wrap">{cleanMessage}</p>
       {log.severity === 'ERROR' && (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => onInterpret(log.message)}>
+              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => onInterpret(cleanMessage)}>
                 <Sparkles className="h-4 w-4 text-accent" />
               </Button>
             </TooltipTrigger>
