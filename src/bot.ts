@@ -18,21 +18,20 @@ import {
   summarizeLogsAction,
   interpretLogErrorAction,
 } from '@/app/actions';
-import type { LogEntry } from './lib/definitions';
 
 const {
   DISCORD_BOT_TOKEN,
   DISCORD_CHANNEL_ID,
   DISCORD_ADMIN_ROLE_ID,
   RAILWAY_API_TOKEN,
-  RAILWAY_SERVICE_ID,
+  TARGET_SERVICE_ID, // Renamed from RAILWAY_SERVICE_ID
 } = process.env;
 
 if (
   !DISCORD_BOT_TOKEN ||
   !DISCORD_CHANNEL_ID ||
   !RAILWAY_API_TOKEN ||
-  !RAILWAY_SERVICE_ID
+  !TARGET_SERVICE_ID // Renamed
 ) {
   console.error('Missing required environment variables. Please check your .env file.');
   process.exit(1);
@@ -111,7 +110,7 @@ async function handleLogsCommand(interactionOrMessage: Message | ButtonInteracti
         await (replyTarget as Message).reply({ content: initialMessage });
     }
 
-    const { logs, error, title } = await fetchLogs(RAILWAY_API_TOKEN!, RAILWAY_SERVICE_ID!, logType, limit);
+    const { logs, error, title } = await fetchLogs(RAILWAY_API_TOKEN!, TARGET_SERVICE_ID!, logType, limit);
 
     if (error) {
       await sendErrorMessage(replyTarget, 'Error al obtener los logs: ' + error);
@@ -154,7 +153,7 @@ async function handleSummarizeCommand(interactionOrMessage: Message | ButtonInte
         await (replyTarget as Message).reply({ content: initialMessage });
     }
 
-    const { logs, error } = await fetchLogs(RAILWAY_API_TOKEN!, RAILWAY_SERVICE_ID!, logType, 50);
+    const { logs, error } = await fetchLogs(RAILWAY_API_TOKEN!, TARGET_SERVICE_ID!, logType, 50);
 
     if (error) {
       await sendErrorMessage(replyTarget, 'Error: ' + error);
@@ -192,7 +191,7 @@ async function handleInterpretCommand(interactionOrMessage: Message | ButtonInte
         await (replyTarget as Message).reply({ content: initialMessage });
     }
 
-    const { logs, error } = await fetchLogs(RAILWAY_API_TOKEN!, RAILWAY_SERVICE_ID!, 'app', 100);
+    const { logs, error } = await fetchLogs(RAILWAY_API_TOKEN!, TARGET_SERVICE_ID!, 'app', 100);
     if (error) {
       await sendErrorMessage(replyTarget, 'Error: ' + error);
       return;
@@ -238,7 +237,7 @@ async function handleHelpCommand(interactionOrMessage: Message | ButtonInteracti
         { name: '`!logs [app|deploy] [cantidad]`', value: 'Muestra los logs. (Ej: `!logs app 30`).' },
         { name: '`!summarize [app|deploy]`', value: 'Genera un resumen con IA de los últimos 50 logs.' },
         { name: '`!interpret`', value: 'Interpreta el último error encontrado en los logs de la aplicación.' },
-        { name: '`!debugid`', value: 'Muestra el Railway Service ID que el bot está usando actualmente.' },
+        { name: '`!debugid`', value: 'Muestra el Service ID que el bot está usando como objetivo.' }, // Updated help text
         { name: '`!help`', value: 'Muestra este mensaje de ayuda.' }
       );
 
@@ -250,12 +249,12 @@ async function handleHelpCommand(interactionOrMessage: Message | ButtonInteracti
 }
 
 async function handleDebugIdCommand(message: Message) {
-  const serviceId = process.env.RAILWAY_SERVICE_ID;
+  const serviceId = process.env.TARGET_SERVICE_ID;
   const embed = new EmbedBuilder()
     .setColor(0xFBBF24) // Amber color
-    .setTitle('🕵️‍♂️ Debug: Railway Service ID')
+    .setTitle('🕵️‍♂️ Debug: Target Service ID')
     .setDescription('El bot está configurado para obtener logs del siguiente Service ID:')
-    .addFields({ name: 'Current Service ID', value: '`' + serviceId + '`' });
+    .addFields({ name: 'Current Target Service ID', value: '`' + serviceId + '`' });
   await message.reply({ embeds: [embed] });
 }
 
