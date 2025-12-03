@@ -238,6 +238,7 @@ async function handleHelpCommand(interactionOrMessage: Message | ButtonInteracti
         { name: '`!logs [app|deploy] [cantidad]`', value: 'Muestra los logs. (Ej: `!logs app 30`).' },
         { name: '`!summarize [app|deploy]`', value: 'Genera un resumen con IA de los últimos 50 logs.' },
         { name: '`!interpret`', value: 'Interpreta el último error encontrado en los logs de la aplicación.' },
+        { name: '`!debugid`', value: 'Muestra el Railway Service ID que el bot está usando actualmente.' },
         { name: '`!help`', value: 'Muestra este mensaje de ayuda.' }
       );
 
@@ -246,6 +247,16 @@ async function handleHelpCommand(interactionOrMessage: Message | ButtonInteracti
     } else {
         await (interactionOrMessage as ButtonInteraction).editReply({ embeds: [embed] });
     }
+}
+
+async function handleDebugIdCommand(message: Message) {
+  const serviceId = process.env.RAILWAY_SERVICE_ID;
+  const embed = new EmbedBuilder()
+    .setColor(0xFBBF24) // Amber color
+    .setTitle('🕵️‍♂️ Debug: Railway Service ID')
+    .setDescription('El bot está configurado para obtener logs del siguiente Service ID:')
+    .addFields({ name: 'Current Service ID', value: '`' + serviceId + '`' });
+  await message.reply({ embeds: [embed] });
 }
 
 // --- Client Ready Event ---
@@ -349,6 +360,9 @@ client.on('messageCreate', async (message: Message) => {
         break;
       case 'help':
         await handleHelpCommand(message);
+        break;
+      case 'debugid':
+        await handleDebugIdCommand(message);
         break;
       default:
         await message.reply('Comando no reconocido. Escribe `!help` o usa los botones.');
