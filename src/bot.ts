@@ -206,5 +206,3 @@ client.on('messageCreate', async (message) => {
 
 console.log('Logging in to Discord...');
 client.login(DISCORD_BOT_TOKEN);
-
-    
