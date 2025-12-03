@@ -11,7 +11,6 @@ import {
   summarizeLogsAction,
   interpretLogErrorAction,
 } from '@/app/actions';
-import { checkAdminRole } from '@/ai/flows/admin-control';
 import type { LogEntry } from './lib/definitions';
 
 const {
@@ -55,8 +54,8 @@ client.on('messageCreate', async (message) => {
   const commandPrefix = '!';
   if (!message.content.startsWith(commandPrefix)) return;
 
-  // Security Check: Admin role
-  if (DISCORD_ADMIN_ROLE_ID) {
+  // Security Check: Admin role. Only checks if the ID is provided and not empty.
+  if (DISCORD_ADMIN_ROLE_ID && DISCORD_ADMIN_ROLE_ID.length > 0) {
     if (!message.member?.roles.cache.has(DISCORD_ADMIN_ROLE_ID)) {
       message.reply({ content: 'Lo siento, no tienes permiso para usar este comando.' });
       return;
