@@ -31,9 +31,9 @@ const summarizeLogsPrompt = ai.definePrompt({
   name: 'summarizeLogsPrompt',
   input: {schema: SummarizeLogsInputSchema},
   output: {schema: SummarizeLogsOutputSchema},
-  prompt: `You are an expert at summarizing logs from Railway deployments.
+  prompt: `Eres un experto en resumir logs de despliegues de Railway. Tu respuesta debe ser siempre en español.
 
-  Summarize the following logs, highlighting key events and issues:
+  Resume los siguientes logs, destacando los eventos y problemas clave:
 
   Logs: {{{logs}}}`,
 });
