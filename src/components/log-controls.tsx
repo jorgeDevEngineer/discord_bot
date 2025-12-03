@@ -34,7 +34,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      railwayApiKey: '45687e49-33af-405d-99ec-a5d330d454a4',
+      railwayApiKey: '',
       serviceId: 'a3c61f67-b334-4dc1-a94f-cf2844933895',
       password: process.env.NEXT_PUBLIC_APP_PASSWORD || 'password',
     },
@@ -66,7 +66,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
     <Card>
       <CardHeader>
         <CardTitle>Configuración</CardTitle>
-        <CardDescription>Ingresa tu token de API de Railway, el ID del servicio y la contraseña para obtener los logs.</CardDescription>
+        <CardDescription>Ingresa tus credenciales de Railway para obtener los logs.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -79,8 +79,11 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
                   <FormItem>
                     <FormLabel>Token de API de Railway</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="proj-..." {...field} />
+                      <Input type="password" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" {...field} />
                     </FormControl>
+                     <FormHelpText>
+                      Necesitas un token de cuenta personal, puedes generarlo en la configuración de tu cuenta de Railway.
+                    </FormHelpText>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -95,7 +98,7 @@ export default function LogControls({ setLogs, setLogTitle, setIsLoading, setErr
                       <Input placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" {...field} />
                     </FormControl>
                     <FormHelpText>
-                      Puedes encontrarlo en la URL de tu servicio en Railway, después de /service/.
+                      Puedes encontrarlo en la URL de tu servicio, después de /service/.
                     </FormHelpText>
                     <FormMessage />
                   </FormItem>
