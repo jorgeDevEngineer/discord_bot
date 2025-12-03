@@ -6,6 +6,7 @@ import {
   EmbedBuilder,
   Partials,
   ChannelType,
+  TextChannel,
 } from 'discord.js';
 import {
   fetchLogs,
@@ -42,9 +43,20 @@ const client = new Client({
   partials: [Partials.Channel],
 });
 
-client.once('clientReady', () => {
-  console.log(`Logged in as ${client.user?.tag}!`);
+client.once('clientReady', async (c) => {
+  console.log(`Logged in as ${c.user?.tag}!`);
   console.log('Bot is ready and listening for commands.');
+
+  try {
+    const channel = await c.channels.fetch(DISCORD_CHANNEL_ID);
+    if (channel && channel.isTextBased()) {
+      (channel as TextChannel).send("¡Hola! Estoy en línea y listo para recibir comandos. Escribe `!help` para empezar.");
+    } else {
+       console.log('Could not find the specified channel or it is not a text channel.');
+    }
+  } catch (error) {
+    console.error("Failed to send startup message:", error);
+  }
 });
 
 client.on('messageCreate', async (message) => {
